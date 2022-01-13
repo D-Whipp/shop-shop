@@ -10,6 +10,11 @@ import spinner from "../assets/spinner.gif";
 import { useStoreContext } from "../utils/GlobalState";
 import { UPDATE_PRODUCTS } from "../utils/actions";
 
+// imported on 1/12/22
+// in 22.2.4
+// near end of webpage
+import Cart from "../components/Cart";
+
 function Detail() {
   const [state, dispatch] = useStoreContext();
   const { id } = useParams();
@@ -54,6 +59,7 @@ function Detail() {
         </div>
       ) : null}
       {loading ? <img src={spinner} alt="loading" /> : null}
+      <Cart />
     </>
   );
 }
