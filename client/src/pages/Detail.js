@@ -8,7 +8,15 @@ import spinner from "../assets/spinner.gif";
 // imported on 22.1.6
 // in the UPDATE PRODUCT DETAIL COMPONENT section
 import { useStoreContext } from "../utils/GlobalState";
-import { UPDATE_PRODUCTS } from "../utils/actions";
+import {
+  // Added on 1/13/22
+  // in 22.2.6
+  REMOVE_FROM_CART,
+  UPDATE_CART_QUANTITY,
+  ADD_TO_CART,
+  // end 1/13/22 - 22.2.6
+  UPDATE_PRODUCTS,
+} from "../utils/actions";
 
 // imported on 1/12/22
 // in 22.2.4
@@ -22,8 +30,41 @@ function Detail() {
   const [currentProduct, setCurrentProduct] = useState({});
 
   const { loading, data } = useQuery(QUERY_PRODUCTS);
+  // Modified on 1/14/22
+  // in 22.2.7
+  const { products, cart } = state;
 
-  const { products } = state;
+  // Added on 1/14/22
+  // in 22.2.7
+  // const { products, cart } = state;
+
+  // Added on 1/13/22
+  // in 22.2.6
+  // Modified on 1/14/22
+  // in 22.2.7
+  const addToCart = () => {
+    const itemInCart = cart.find((cartItem) => cartItem._id === id);
+
+    if (itemInCart) {
+      dispatch({
+        type: UPDATE_CART_QUANTITY,
+        _id: id,
+        purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1,
+      });
+    } else {
+      dispatch({
+        type: ADD_TO_CART,
+        product: { ...currentProduct, purchaseQuantity: 1 },
+      });
+    }
+  };
+
+  const removeFromCart = () => {
+    dispatch({
+      type: REMOVE_FROM_CART,
+      _id: currentProduct._id,
+    });
+  };
 
   useEffect(() => {
     if (products.length) {
@@ -48,8 +89,13 @@ function Detail() {
 
           <p>
             <strong>Price:</strong>${currentProduct.price}{" "}
-            <button>Add to Cart</button>
-            <button>Remove from Cart</button>
+            <button onClick={addToCart}>Add to Cart</button>
+            <button
+              disabled={!cart.find((p) => p._id === currentProduct._id)}
+              onClick={removeFromCart}
+            >
+              Remove from Cart
+            </button>
           </p>
 
           <img
