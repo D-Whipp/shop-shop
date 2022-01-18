@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { pluralize } from "../../utils/helpers";
-
+import { idbPromise, pluralize } from "../../utils/helpers";
 // Added on 1/13/22
 // in 22.2.6
 import { useStoreContext } from "../../utils/GlobalState";
@@ -18,11 +17,6 @@ function ProductItem(item) {
   // Modified on 1/14/22
   // in 22.2.7
   const addToCart = () => {
-    // dispatch({
-    //   type: ADD_TO_CART,
-    //   product: { ...item, purchaseQuantity: 1 },
-    // });
-    // VVVV Modifications Below VVVV
     // find the cart item with the matching id
     const itemInCart = cart.find((cartItem) => cartItem._id === _id);
 
@@ -33,11 +27,16 @@ function ProductItem(item) {
         _id: _id,
         purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1,
       });
+      idbPromise("cart", "put", {
+        ...itemInCart,
+        purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1,
+      });
     } else {
       dispatch({
         type: ADD_TO_CART,
         product: { ...item, purchaseQuantity: 1 },
       });
+      idbPromise("cart", "put", { ...item, purchaseQuantity: 1 });
     }
   };
 
